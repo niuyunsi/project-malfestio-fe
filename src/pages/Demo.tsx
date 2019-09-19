@@ -3,6 +3,8 @@ import { API_URL, PROD_API_URL } from '../config';
 
 const url = process.env.NODE_ENV === 'production' ? PROD_API_URL : API_URL;
 
+console.log('process.env', process.env)
+
 export const Demo = () => {
   const handleFetchAnimals = () => {
     fetch(url)
