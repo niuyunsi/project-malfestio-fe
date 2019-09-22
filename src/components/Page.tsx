@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
 
-import { Header, Nav } from './';
+import { Header } from './';
 
 const theme = {
   red: '#FF0000',
@@ -39,7 +39,7 @@ const StyledPage = styled.div`
 const Inner = styled.div`
   /* max-width: ${props => props.theme.maxWidth}; */
   /* margin: 0 auto; */
-  padding: 2rem;
+  /* padding: 2rem; */
   /* border: 1px solid black; */
 `;
 
