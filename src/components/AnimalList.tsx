@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import NProgress from 'nprogress';
 
-import { API_URL, PROD_API_URL } from '../config';
-
-const url = process.env.NODE_ENV === 'production' ? PROD_API_URL : API_URL;
-console.log('url', url);
+import { animalService } from '../services/AnimalService';
 
 const StyledDemoWrapper = styled.div`
   display: flex;
@@ -29,10 +26,6 @@ const StyledInputWrapper = styled.div`
 
 const StyledAnimalsWrapper = styled.div`
   width: 50%;
-  /* display: flex;
-  flex-direction: column;
-  align-items: center; */
-
   display: grid;
   grid-gap: 10px;
 
@@ -42,52 +35,45 @@ const StyledAnimalsWrapper = styled.div`
 `;
 
 const StyledAnimalWrapper = styled.div`
-  /* width: 100%; */
-  /* display: flex;
-  justify-content: space-between; */
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr auto;
   justify-items: start;
 `;
 
 interface Animal {
-  name: string;
+  dateOfEntry: string;
   isEndangered: boolean;
+  name: string;
+  __v: number;
+  _id: string;
 }
 
 export const AnimalList = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [animals, setAnimals] = useState([] as any[]);
+  const [animals, setAnimals] = useState<Animal[]>([]);
   const [name, setName] = useState('');
   const [isEndangered, setIsEndangered] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchAnimals = async () => {
-    console.log('fetch data');
-    setIsLoading(true);
-    const res = await fetch(url);
-    res
-      .json()
-      .then(res => {
-        setAnimals(res);
-        setIsLoading(false);
-      })
-      .catch(err => console.log(err));
-  };
-
   useEffect(() => {
-    fetchAnimals();
+    getAnimals();
   }, []);
 
   useEffect(() => {
-    console.log('effect');
     if (isLoading || isSubmitting || isDeleting) {
       NProgress.start();
     } else {
       NProgress.done();
     }
   }, [isLoading, isSubmitting, isDeleting]);
+
+  const getAnimals = async () => {
+    setIsLoading(true);
+    const animals = await animalService.getAnimals();
+    setAnimals(animals);
+    setIsLoading(false);
+  };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
@@ -103,25 +89,13 @@ export const AnimalList = () => {
     createAnimal({ name, isEndangered });
   };
 
-  const createAnimal = async (animal: Animal) => {
-    console.log('create new animal');
+  const createAnimal = async (animal: Partial<Animal>) => {
     setIsSubmitting(true);
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(animal)
-    });
-    res
-      .json()
-      .then(res => {
-        setAnimals([...animals, res]);
-        setName('');
-        setIsEndangered(false);
-        setIsSubmitting(false);
-      })
-      .catch(err => console.log(err));
+    const newAnimal = await animalService.createAnimal(animal);
+    setAnimals([...animals, newAnimal]);
+    setName('');
+    setIsEndangered(false);
+    setIsSubmitting(false);
   };
 
   const handleDelete = (id: string) => {
@@ -129,25 +103,10 @@ export const AnimalList = () => {
   };
 
   const deleteAnimal = async (id: string) => {
-    console.log('delete animal');
     setIsDeleting(true);
-    const res = await fetch(`${url}/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    res
-      .json()
-      .then(res => {
-        setAnimals(animals.filter(animal => animal._id !== id));
-        setIsDeleting(false);
-      })
-      .catch(err => console.log(err));
-  };
-
-  const handleUpdate = () => {
-    console.log('edit animal');
+    await animalService.deleteAnimal(id);
+    setAnimals(animals.filter(animal => animal._id !== id));
+    setIsDeleting(false);
   };
 
   return (
@@ -174,7 +133,7 @@ export const AnimalList = () => {
             <button onClick={() => handleDelete(animal._id)}>Delete</button>
           </StyledAnimalWrapper>
         ))}
-        <button onClick={fetchAnimals}>Refresh</button>
+        <button onClick={getAnimals}>Refresh</button>
       </StyledAnimalsWrapper>
     </StyledDemoWrapper>
   );
