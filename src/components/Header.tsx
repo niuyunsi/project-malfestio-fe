@@ -15,7 +15,7 @@ const StyledHeader = styled.div`
 
 export const Header = () => (
   <StyledHeader>
-    <div>project rathalos</div>
+    <div>project malfestio</div>
     <Nav />
   </StyledHeader>
 );

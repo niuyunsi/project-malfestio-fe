@@ -49,7 +49,7 @@ interface PageProps {
 
 export const Page = (props: PageProps) => {
   useEffect(() => {
-    document.title = 'project rathalos';
+    document.title = 'project malfestio';
   });
 
   return (
