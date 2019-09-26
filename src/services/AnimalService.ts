@@ -1,26 +1,13 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 import { API_URL, PROD_API_URL } from '../config';
+import { Animal } from '../common/types';
 
 const url = process.env.NODE_ENV === 'production' ? PROD_API_URL : API_URL;
 
-interface Animal {
-  dateOfEntry: string;
-  isEndangered: boolean;
-  name: string;
-  __v: number;
-  _id: string;
-}
-
-type ServiceConfig = {
-  url: string;
-};
-
 class AnimalService {
-  constructor(private url: string) {
-    console.log('new animal service');
-  }
-  
+  constructor(private url: string) {}
+
   getAnimals = async () => {
     const res = await axios.get<Animal[]>(this.url);
     return res.data;
@@ -32,15 +19,13 @@ class AnimalService {
   };
 
   deleteAnimal = async (id: string) => {
-    const res = await axios.delete(`${this.url}/${id}`);
-    console.log('deleteAnimal', res);
+    await axios.delete(`${this.url}/${id}`);
     return;
   };
 
   updateAnimal = async (id: string, animal: Partial<Animal>) => {
-    const res = await axios.put(`${this.url}/${id}`, animal);
-    console.log('updateAnimal', res);
-    return res;
+    await axios.put(`${this.url}/${id}`, animal);
+    return;
   };
 }
 

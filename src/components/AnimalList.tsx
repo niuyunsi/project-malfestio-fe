@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import NProgress from 'nprogress';
 
+import { Animals, CreateAnimal } from './';
+import { Animal } from '../common/types';
 import { animalService } from '../services/AnimalService';
 
 const StyledDemoWrapper = styled.div`
@@ -12,41 +14,6 @@ const StyledDemoWrapper = styled.div`
     flex-direction: column;
   }
 `;
-
-const StyledInputWrapper = styled.div`
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  @media (max-width: 480px) {
-    width: 100%;
-  }
-`;
-
-const StyledAnimalsWrapper = styled.div`
-  width: 50%;
-  display: grid;
-  grid-gap: 10px;
-
-  @media (max-width: 480px) {
-    width: 100%;
-  }
-`;
-
-const StyledAnimalWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  justify-items: start;
-`;
-
-interface Animal {
-  dateOfEntry: string;
-  isEndangered: boolean;
-  name: string;
-  __v: number;
-  _id: string;
-}
 
 export const AnimalList = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -75,13 +42,11 @@ export const AnimalList = () => {
     setIsLoading(false);
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value;
+  const handleNameChange = (name: string) => {
     setName(name);
   };
 
-  const handleIsEndangeredChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isEndangered = e.target.checked;
+  const handleIsEndangeredChange = (isEndangered: boolean) => {
     setIsEndangered(isEndangered);
   };
 
@@ -98,7 +63,7 @@ export const AnimalList = () => {
     setIsSubmitting(false);
   };
 
-  const handleDelete = (id: string) => {
+  const handleAnimalDelete = (id: string) => {
     deleteAnimal(id);
   };
 
@@ -109,32 +74,27 @@ export const AnimalList = () => {
     setIsDeleting(false);
   };
 
+  const handleRefresh = () => {
+    getAnimals();
+  };
+
   return (
     <StyledDemoWrapper>
-      <StyledInputWrapper>
-        {isSubmitting && <div>Submitting new animal</div>}
-        <div>
-          <span>Animal name:</span>
-          <input type="text" onChange={handleNameChange} value={name}></input>
-        </div>
-        <div>
-          <input type="checkbox" onChange={handleIsEndangeredChange} checked={isEndangered} />
-          <label>Is endangered?</label>
-        </div>
-        <button onClick={handleSubmit}>Submit</button>
-      </StyledInputWrapper>
-      <StyledAnimalsWrapper>
-        {isLoading && <div>Loading animals</div>}
-        {isDeleting && <div>Deleting animal</div>}
-        {animals.map((animal: any) => (
-          <StyledAnimalWrapper key={animal._id}>
-            <div>Name: {animal.name}</div>
-            <div>Is endangered?: {animal.isEndangered ? 'Yes' : 'No'}</div>
-            <button onClick={() => handleDelete(animal._id)}>Delete</button>
-          </StyledAnimalWrapper>
-        ))}
-        <button onClick={getAnimals}>Refresh</button>
-      </StyledAnimalsWrapper>
+      <CreateAnimal
+        name={name}
+        isEndangered={isEndangered}
+        isSubmitting={isSubmitting}
+        onNameChange={handleNameChange}
+        onIsEndangeredChange={handleIsEndangeredChange}
+        onSubmit={handleSubmit}
+      />
+      <Animals
+        animals={animals}
+        isLoading={isLoading}
+        isDeleting={isDeleting}
+        onAnimalDelete={handleAnimalDelete}
+        onRefresh={handleRefresh}
+      />
     </StyledDemoWrapper>
   );
 };

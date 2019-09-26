@@ -1,75 +1,51 @@
-import React, { useState } from 'react';
-// import styled from 'styled-components';
+import React from 'react';
+import styled from 'styled-components';
 
-// import { API_URL, PROD_API_URL } from '../config';
+const StyledInputWrapper = styled.div`
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-// const url = process.env.NODE_ENV === 'production' ? PROD_API_URL : API_URL;
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+`;
 
-// const StyledInputWrapper = styled.div`
-//   width: 50%;
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-// `;
+interface CreateAnimalProps {
+  name: string;
+  isEndangered: boolean;
+  isSubmitting: boolean;
+  onNameChange: (name: string) => void;
+  onIsEndangeredChange: (isEndangered: boolean) => void;
+  onSubmit: () => void;
+}
 
-// interface Animal {
-//   name: string;
-//   isEndangered: boolean;
-// }
+export const CreateAnimal = React.memo((props: CreateAnimalProps) => {
+  const { name, isEndangered, isSubmitting, onNameChange, onIsEndangeredChange, onSubmit } = props;
 
-export const CreateAnimal = () => {
-  //   const [name, setName] = useState('');
-  //   const [isEndangered, setIsEndangered] = useState(false);
-  //   const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onNameChange(e.target.value);
+  };
+  const handleIsEndangeredChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onIsEndangeredChange(e.target.checked);
+  };
+  const handleSubmit = () => {
+    onSubmit();
+  };
 
-  //   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const name = e.target.value;
-  //     setName(name);
-  //   };
-
-  //   const handleIsEndangeredChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const isEndangered = e.target.checked;
-  //     setIsEndangered(isEndangered);
-  //   };
-
-  //   const handleSubmit = () => {
-  //     createAnimal({ name, isEndangered });
-  //   };
-
-  //   const createAnimal = async (animal: Animal) => {
-  //     console.log('create new animal');
-  //     setIsSubmitting(true);
-  //     const res = await fetch(url, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify(animal)
-  //     });
-  //     res
-  //       .json()
-  //       .then(res => {
-  //         setAnimals([...animals, res]);
-  //         setName('');
-  //         setIsEndangered(false);
-  //         setIsSubmitting(false);
-  //       })
-  //       .catch(err => console.log(err));
-  //   };
-
-  //   return (
-  //     <StyledInputWrapper>
-  //       {isSubmitting && <div>Submitting new animal</div>}
-  //       <div>
-  //         <span>Animal name:</span>
-  //         <input type="text" onChange={handleNameChange} value={name}></input>
-  //       </div>
-  //       <div>
-  //         <input type="checkbox" onChange={handleIsEndangeredChange} checked={isEndangered} />
-  //         <label>Is endangered?</label>
-  //       </div>
-  //       <button onClick={handleSubmit}>Submit</button>
-  //     </StyledInputWrapper>
-  //   );
-  return <div />;
-};
+  return (
+    <StyledInputWrapper>
+      {isSubmitting && <div>Submitting new animal</div>}
+      <div>
+        <span>Animal name:</span>
+        <input type="text" onChange={handleNameChange} value={name}></input>
+      </div>
+      <div>
+        <input type="checkbox" onChange={handleIsEndangeredChange} checked={isEndangered} />
+        <label>Is endangered?</label>
+      </div>
+      <button onClick={handleSubmit}>Submit</button>
+    </StyledInputWrapper>
+  );
+});
